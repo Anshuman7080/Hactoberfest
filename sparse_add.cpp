@@ -1,155 +1,108 @@
 #include <iostream>
+#include <vector>
+#include <algorithm>
+
 using namespace std;
 
-void sort(int arr[][3], int size)
-{
-  for (int i = 0; i < size - 1; i++)
-  {
-    for (int j = 1; j < size - i - 1; j++)
-    {
-      if (arr[j][0] > arr[j + 1][0])
-      {
-        swap(arr[j][0], arr[j + 1][0]);
-        swap(arr[j][1], arr[j + 1][1]);
-        swap(arr[j][2], arr[j + 1][2]);
-      }
-
-      else if (arr[j][0]==arr[j+1][0] && arr[j][1]>arr[j+1][1])
-      {
-        swap(arr[j][0], arr[j + 1][0]);
-        swap(arr[j][1], arr[j + 1][1]);
-        swap(arr[j][2], arr[j + 1][2]);
-      }
-    }
-  }
+// Function to sort the sparse matrix based on row and column
+void sortSparseMatrix(vector<vector<int>>& sparse) {
+    sort(sparse.begin() + 1, sparse.end(), [](const vector<int>& a, const vector<int>& b) {
+        if (a[0] == b[0])
+            return a[1] < b[1]; // Sort by column if rows are equal
+        return a[0] < b[0]; // Sort by row
+    });
 }
 
-void del(int arr[][3], int size)
-{
-  for (int i = 1; i < size - 1; i++)
-  {
-    arr[i][0] = arr[i + 1][0];
-    arr[i][1] = arr[i + 1][1];
-    arr[i][2] = arr[i + 1][2];
-  }
-  size--;
-}
+int main() {
+    int rows, cols, n1, n2;
 
-int main()
-{
-  int rows, cols, n1, n2;
+    cout << "Enter number of rows for both matrices: ";
+    cin >> rows;
+    cout << "Enter number of cols for both matrices: ";
+    cin >> cols;
+    cout << "Enter number of non-zero values in matrix 1: ";
+    cin >> n1;
+    cout << "Enter number of non-zero values in matrix 2: ";
+    cin >> n2;
 
-  cout << "Enter no of rows for both matrices: ";
-  cin >> rows;
-  cout << "Enter no of cols for both matrices: ";
-  cin >> cols;
-  cout << "Enter no of non-zero values in matrix 1: ";
-  cin >> n1;
-  cout << "Enter no of non-zero values in matrix 2: ";
-  cin >> n2;
-
-  int sparse1[n1+1][3], sparse2[n2+1][3];
-  sparse1[0][0] = sparse2[0][0] = rows;
-  sparse1[0][1] = sparse2[0][1] = cols;
-  sparse1[0][2] = n1;
-  sparse2[0][2] = n2;
-
-  string arr[3] = {"row", "col", "value"};
-
-  // input
-  cout << "\nFor matrix 1:" << endl;
-  for (int i = 1; i < n1 + 1; i++)
-  {
-    for (int j = 0; j < 3; j++)
-    {
-      cout << "Enter " << arr[j] << ": ";
-      cin >> sparse1[i][j];
-    }
-  }
-  
-  cout << "\nFor matrix 2:" << endl;
-  for (int i = 1; i < n2 + 1; i++)
-  {
-    for (int j = 0; j < 3; j++)
-    {
-      cout << "Enter " << arr[j] << ": ";
-      cin >> sparse2[i][j];
-    }
-  }
-
-  sort(sparse1, n1+1);
-  sort(sparse2, n2+1);
-
-  //add
-  int counter=0, add[n1+n2+1][3], i=1, j=1, k=1;
-
-  while(i<=n1+1 && j<=n2+1){
-    if(sparse1[i][0]<sparse2[j][0]){
-      add[k][0] = sparse1[i][0];
-      add[k][1] = sparse1[i][1];
-      add[k][2] = sparse1[i][2];
-      k++;
-      i++;
-      counter++;
-    }
+    vector<vector<int>> sparse1(n1 + 1, vector<int>(3));
+    vector<vector<int>> sparse2(n2 + 1, vector<int>(3));
     
-    else if(sparse1[i][0]>sparse2[j][0]){
-      add[k][0] = sparse2[j][0];
-      add[k][1] = sparse2[j][1];
-      add[k][2] = sparse2[j][2];
-      k++;
-      j++;
-      counter++;
-    }
-    
-    else if(sparse1[i][1]<sparse2[j][1]){
-      add[k][0] = sparse1[i][0];
-      add[k][1] = sparse1[i][1];
-      add[k][2] = sparse1[i][2];
-      k++;
-      i++;
-      counter++;
-    }
-    
-    else if(sparse1[i][1]>sparse2[j][1]){
-      add[k][0] = sparse2[j][0];
-      add[k][1] = sparse2[j][1];
-      add[k][2] = sparse2[j][2];
-      k++;
-      j++;
-      counter++;
+    sparse1[0] = {rows, cols, n1};
+    sparse2[0] = {rows, cols, n2};
+
+    string arr[3] = {"row", "col", "value"};
+
+    // Input for matrix 1
+    cout << "\nFor matrix 1:" << endl;
+    for (int i = 1; i <= n1; i++) {
+        for (int j = 0; j < 3; j++) {
+            cout << "Enter " << arr[j] << ": ";
+            cin >> sparse1[i][j];
+        }
     }
 
-    else{
-      add[k][0] = sparse1[i][0];
-      add[k][1] = sparse1[i][1];
-      add[k][2] = sparse1[i][2]+sparse2[j][2];
-      k++;
-      i++;
-      j++;
-      counter++;
+    // Input for matrix 2
+    cout << "\nFor matrix 2:" << endl;
+    for (int i = 1; i <= n2; i++) {
+        for (int j = 0; j < 3; j++) {
+            cout << "Enter " << arr[j] << ": ";
+            cin >> sparse2[i][j];
+        }
     }
-  }
 
-  add[0][0] = rows;
-  add[0][1] = cols;
-  add[0][2] = counter;
+    // Sort both sparse matrices
+    sortSparseMatrix(sparse1);
+    sortSparseMatrix(sparse2);
 
-  //display
-  cout << "\nResultant:" << endl;
+    // Add the sparse matrices
+    vector<vector<int>> add(n1 + n2 + 1, vector<int>(3));
+    add[0] = {rows, cols, 0};
 
-  for (int i = 0; i < rows; i++)
-  {
-    for (int j = 0; j < cols; j++)
-    {
-      if (i == add[1][0] && j == add[1][1])
-      {
-        cout << add[1][2] << '\t';
-        del(add, counter+1);
-      }
-      else
-        cout << 0 << '\t';
+    int i = 1, j = 1, k = 1;
+
+    while (i <= n1 && j <= n2) {
+        if (sparse1[i][0] < sparse2[j][0] || (sparse1[i][0] == sparse2[j][0] && sparse1[i][1] < sparse2[j][1])) {
+            add[k++] = sparse1[i++];
+        } else if (sparse1[i][0] > sparse2[j][0] || (sparse1[i][0] == sparse2[j][0] && sparse1[i][1] > sparse2[j][1])) {
+            add[k++] = sparse2[j++];
+        } else { // They are equal in row and column
+            add[k] = {sparse1[i][0], sparse1[i][1], sparse1[i][2] + sparse2[j][2]};
+            k++;
+            i++;
+            j++;
+        }
     }
-    cout << endl;
-  }
+
+    // Copy remaining elements from sparse1
+    while (i <= n1) {
+        add[k++] = sparse1[i++];
+    }
+
+    // Copy remaining elements from sparse2
+    while (j <= n2) {
+        add[k++] = sparse2[j++];
+    }
+
+    // Update the count of non-zero values
+    add[0][2] = k - 1;
+
+    // Display the result
+    cout << "\nResultant Sparse Matrix:" << endl;
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            bool found = false;
+            for (int m = 1; m < k; m++) {
+                if (add[m][0] == r && add[m][1] == c) {
+                    cout << add[m][2] << '\t';
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) cout << 0 << '\t';
+        }
+        cout << endl;
+    }
+
+    return 0;
 }
